@@ -1,0 +1,52 @@
+package main
+import POJOS.Client;
+import POJOS.Credit;
+dialect "java"
+rule "validate credit"
+    when
+        $c:Client($c.getIncomming()>1000&& !$c.getBadClient()&& $c.getCountSuccses()>0)
+    then
+        System.out.println($c.getName()+" вам одобрен кредит");
+end
+
+rule "invalidate incomming"
+    when
+        $c:Client($c.getIncomming()<=1000)
+    then
+        System.out.println($c.getName()+" маловат доход");
+end
+
+rule "invalidate bad client"
+    when
+        $c:Client($c.getBadClient())
+    then
+        System.out.println($c.getName()+" вы плохой клиент");
+end
+
+rule "invalidate succes"
+    when
+        $c:Client($c.getCountSuccses()==0)
+    then
+        System.out.println($c.getName()+" у вас нет кредитной истории");
+end
+
+rule "Credit for bad"
+    when
+        $c:Client($c.getIncomming()>1000&&$c.getIncomming()<1500&& !$c.getBadClient()&& $c.getCountSuccses()>0)
+        $cr:Credit()
+    then
+        $cr.setSumm(1200);
+        $cr.setPercent(30);
+        System.out.println($c.getName()+" вам выдано "+$cr.getSumm()+" под "+$cr.getPercent()+" процентов ");
+end
+
+rule "Credit for good"
+    when
+        $c:Client($c.getIncomming()>=1500&& !$c.getBadClient()&& $c.getCountSuccses()>0)
+        $cr:Credit()
+    then
+        $cr.setSumm(3000);
+        $cr.setPercent(70);
+        System.out.println($c.getName()+" вам выдано "+$cr.getSumm()+" под "+$cr.getPercent()+" процентов ");
+end
+
